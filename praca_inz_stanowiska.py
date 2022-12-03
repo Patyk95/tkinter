@@ -17,256 +17,354 @@ cur=con
 #cur.execute('drop table status_produkcji')
 #cur.execute("drop table status_produkcji")
 
+'''
+PRZEJSICE NA MODUŁ KADR - NUMERY PERSONALNE ORAZ PRAWOCOWNICY
 
-''''
-Czas Pracy
-Czas Pracy
-Czas Pracy
 '''
 
-def czas_pracy():
-    # creating dbbms
-    con = sqlite3.connect('factory_db')
-    cur = con.cursor()
-    cur.execute("create table if not exists wejscie(id integer primary key autoincrement,numer_pers not null,dzien,godzina_r,dzien1,godzina_z)")
-    # cur.execute("drop table wyjscie")
+def karta_pers():
     window = Tk()
-    window.title("Czas pracy")
-    window.geometry("550x450")
-    window.configure(background='#b3b3b3')
-    czas1 = time.gmtime()
-    w = calendar.timegm(czas1)
-    date_time = datetime.fromtimestamp(w)
-    czas_to_date = date_time.strftime("%Y-%m-%d %H:%M:%S")
+    window.title('System Zarządzania Personelem')
+    window.config(background='#b3b3b3')
+    window.state('zoomed')
 
-    def data():
-        dzien = strftime('%Y - %m - %d')
-        lbl_dzien.config(text="Jest: " + dzien)
+    # creating Databases
+    con = sqlite3.connect('factory_db')
+    cur = con
+    cur.execute(
+       'create table if not exists pracownicy (id integer primary key autoincrement, imie, nazwisko, numer_telefonu,numer_personalny)')
+    #cur.execute('drop table pracownicy')
+    cur.execute(
+        'create table if not exists numery_personalne (id integer primary key autoincrement,numer_personalny,nazwa_dzialu)')
 
-    def check_numer():
-        if num_pers.get():
+    #cur.execute('drop table numery_personalne')
+    def save():
+        if b1.get() and b2.get() and b3.get() and b4.get() and b5.get():
             con = sqlite3.connect('factory_db')
             cur = con
-            results = cur.execute('select * from pracownicy where numer_personalny=?', (num_pers.get(),))
-            w1 = results.fetchall()
-            if len(w1)>0:
-                if b3.get():
-                    start()
-                else:
-                    messagebox.showerror("Błąd Danych","Nie Podano Wartości")
-                    window.destroy()
-            else:
-                messagebox.showerror("Błąd Danych","Podany Numer Personalny Nie Istnieje W Systemie")
-                window.destroy()
-        else:
-            tk.messagebox.showerror('Błąd Danych', "Numer Personalny Musi Być Podany-Zacznij Ponownie")
-            window.destroy()
-    def check_numer1():
-        if num_pers.get():
-            con = sqlite3.connect('factory_db')
-            cur = con
-            results = cur.execute('select * from pracownicy where numer_personalny=?', (num_pers.get(),))
-            w1 = results.fetchall()
-            if len(w1) > 0:
-                if b3.get():
-                    koniec()
-                else:
-                    messagebox.showerror("Błąd Danych", "Nie Podano Wartości")
-                    window.destroy()
-            else:
-                messagebox.showerror("Błąd Danych", "Podany Numer Personalny Nie Istnieje W Systemie")
-                window.destroy()
-            tk.messagebox.showerror('Błąd Danych', "Numer Personalny Musi Być Podany-Zacznij Ponownie")
-            window.destroy()
-
-    def start():
-        time.gmtime()
-        w = calendar.timegm(czas1)
-        date_time = datetime.now().fromtimestamp(w)
-        data = date_time.strftime("%Y-%m-%d ")
-        date_format_str = '%Y-%m-%d %H:%M:%S'
-        start = datetime.strptime(czas_to_date, date_format_str)
-        con = sqlite3.connect('factory_db')
-        cur = con
-        e = 'empty'
-        cur.execute(
-            "insert into wejscie(numer_pers,dzien,godzina_r,dzien1,godzina_z)values(:num,:dz,:godz,:dz1,:godz2)",
-            {
-                'num': num_pers.get(),
-                'dz': data,
-                'godz': start,
-                'dz1': e,
-                'godz2': b3.get()
-            })
-        num_pers.delete(0, END)
-        b3.delete(0, END)
-        messagebox.showinfo(title="Informacja Systemowa", message='Dodano Czas Pracy ')
-        con.commit()
-        window.destroy()
-
-    def koniec():
-        czas = time.gmtime()
-        w = calendar.timegm(czas)
-        date_time = datetime.fromtimestamp(w)
-        data1 = date_time.strftime("%Y-%m-%d ")
-        date_format_str = '%Y-%m-%d %H:%M:%S'
-        end = datetime.strptime(czas_to_date, date_format_str)
-        con = sqlite3.connect('factory_db')
-        cur = con.cursor()
-        quer=("update wejscie set dzien1 = ?, godzina_z = ? where numer_pers = ? and godzina_z = ? ")
-        dane=(data1,end,num_pers.get(),b3.get())
-        cur.execute(quer,dane)
-        con.commit()
-        num_pers.delete(0, END)
-        messagebox.showinfo(title="Informacja Systemowa", message='Dodano czas ukończenia pracy')
-        window.destroy()
-    lbl_dzien = Label(window, font=('arial', 30), background='white',foreground='black')  # data-wyświetlanie daty na gui
-    lbl_dzien.grid(row=4, column=0)
-    data()
-    mystr = StringVar()
-    mystr.set('Uzupełnij numer personalny w innym wypadku czas nie będzie naliczonoy')
-    num_pers = Entry(window, font=('arial', 30))
-    num_pers.grid(row=1, column=0, pady=10, padx=10)  # num_personalny
-    num_personalny_label = Label(window, text='Wprowadź swój numer identyfikacyjny: ', font=("arial", 20),background='white', foreground='black')
-    num_personalny_label.grid(row=0, column=0, pady=10)
-    num_personalny_label1 = Label(window, text='Numer pracowniczy musi być podany by odnotować czas',font=("arial", 15), background='red', foreground='yellow')
-    num_personalny_label1.grid(row=7, column=0,padx=10,pady=10)
-    l1=Label(window,text='Podaj Wartość:',font=('arial',20),background='white')
-    l1.grid(row=2,column=0,padx=10,pady=10)
-    b3=Entry(window,font=('arial',20))
-    b3.grid(row=3,column=0,padx=10,pady=10)
-    b1 = Button(window, text="Rozpocznij pracę", command=check_numer, width=20)
-    b1.grid(row=5, column=0, padx=20, pady=30,sticky='W')
-    b2 = Button(window, text="Zakończ pracę", command=check_numer1, width=20)
-    b2.grid(row=5, column=0, padx=20, pady=30,sticky='E')
-
-    def explore_work_time():
-        con = sqlite3.connect('factory_db')
-        cur = con
-        results = cur.execute("select id,numer_pers,dzien,godzina_r,godzina_z,ROUND((JULIANDAY(godzina_z) - JULIANDAY(godzina_r)) *1440 )as difference from wejscie where difference>1")
-        d = results.fetchall()
-        if len(d) > 0:
-            window = tk.Tk()
-            window.title('Obliczanie Czasu Pracy')
-            window.geometry('1450x1000')
-            # define columns
-            columns = ('c1', 'c2', 'c3', 'c4', 'c5', 'c6')
-            tree = ttk.Treeview(window, columns=columns, show='headings', height=52)
-            # define headings
-            tree.heading('c1', text='Numer Wiersza')
-            tree.heading('c2', text='Numer Pracownika')
-            tree.heading('c3', text='Data Rozpoczęcia Pracy')
-            tree.heading('c4', text='Godzina Rozpoczęcia Pracy')
-            tree.heading('c5', text='Godzina Zakończenia Pracy')
-            tree.heading('c6', text='Całkowity Czas Pracy')
-            # add data to the treeview
-            rows=cur.execute("select id,numer_pers,dzien,godzina_r,godzina_z,ROUND((JULIANDAY(godzina_z) - JULIANDAY(godzina_r)) *1440 )as difference from wejscie where difference>1")
-            for row in rows:
-                tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4], row[5]))
-                tree.grid(row=0, column=0, sticky='nsew')
-                # add a scrollbar
-                scrollbar = ttk.Scrollbar(window, orient=tk.VERTICAL, command=tree.yview)
-                tree.configure(yscroll=scrollbar.set)
-                scrollbar.grid(row=0, column=1, sticky='ns')
-        if len(d)<1:
-            messagebox.showinfo('Informacja Systemowa','Baza Danych Nie Zawiera Odnotowanego Czasu')
-
-    def narzedzia():
-        windowq = tk.Tk()
-        windowq.title('Całkowity czas pracy')
-        windowq.geometry('750x150')
-        windowq.configure(background='#b3b3b3')
-        Label(windowq, text="Narzędzia Służą Czyszczeniu Danych z Tabel Zachowaj Ostrożność", font=("arial", 18),
-              background='red', foreground='yellow').grid(row=1, column=0, pady=10, padx=10, sticky='N')
-        Button(windowq, text="Wyczyść Tabelę Wejść",command=czysc_wejscie,font=('arial',30)).grid(row=3, column=0, pady=10, padx=10,sticky='N')
-    def czysc_wejscie():
-        con = sqlite3.connect('factory_db')
-        cur = con.cursor()
-        q = tk.messagebox.askyesno('Informacja Systemowa', "Chcesz wyczyścić tabelę wejść?")
-        if q == 1:
-            cur.execute("delete from wejscie")
+            cur.execute(
+                'insert into pracownicy (imie,nazwisko,numer_telefonu,numer_personalny) values(:imie,:nazwisko,:numer_telefonu,:numer_personalny)',
+                {
+                    'imie': b1.get(),
+                    'nazwisko': b2.get(),
+                    'numer_telefonu': b3.get(),
+                    'numer_personalny': b4.get()
+                })
             con.commit()
-        elif q == 0:
-            time.sleep(5)
+            cur.execute(
+                'insert into numery_personalne (numer_personalny,nazwa_dzialu)values(:numer_personalny,:nazwa_dzialu)',
+                {
+                    'numer_personalny': b4.get(),
+                    'nazwa_dzialu': b5.get()
+                })
+            con.commit()
+            tk.messagebox.showinfo('Informacja', 'Wpis Został Utworzony')
+            b1.delete(0, END)
+            b2.delete(0, END)
+            b3.delete(0, END)
+            b4.delete(0, END)
+            b5.delete(0, END)
 
-    def explore_table():
+        else:
+            tk.messagebox.showwarning('Błąd Danych', 'Brakuje Jednego Z Wymaganych Pól')
+
+    def checking():
         con = sqlite3.connect('factory_db')
         cur = con
-        results = cur.execute('select * from wejscie')
-        d = results.fetchall()
-        if len(d) > 0:
-            window=Tk()
-            window.geometry('1450x850')
+        results = cur.execute("SELECT * from pracownicy WHERE numer_personalny= :numer_personalny", {
+            'numer_personalny': b4.get()
+        })
+        if results.fetchall():
+            w = tk.messagebox.askquestion('Informacja Systemowa',
+                                          'Wpis Dla Podanego Pracownika Już Istnieje-Czy Chcesz Go Nadpisać?')
+            if w == 'yes':
+                cur.execute(
+                    'update pracownicy set imie = :imie,nazwisko = :nazwisko,numer_telefonu = :numer_telefonu,numer_personalny = :numer_personalny where numer_personalny = :numer_personalny',
+                    {
+                        'imie': b1.get(),
+                        'nazwisko': b2.get(),
+                        'numer_telefonu': b3.get(),
+                        'numer_personalny': b4.get()
+                    })
+                con.commit()
+                cur.execute(
+                    'update numery_personalne set numer_personalny = :numer_personalny,nazwa_dzialu = :nazwa_dzialu, where numer_personalny = :numer_personalny',
+                    {
+                        'numer_personalny': b4.get(),
+                        'nazwa_dzialu': b5.get(),
+                    })
+                con.commit()
+                tk.messagebox.showinfo('Informacja', 'Zmainy Zostały Zapisane')
+                b1.delete(0, END)
+                b2.delete(0, END)
+                b3.delete(0, END)
+                b4.delete(0, END)
+                b5.delete(0, END)
+
+            if w == 'no':
+                tk.messagebox.showinfo('Informacja Systemowa', 'Zmiany Zostały Odrzucone')
+        else:
+            messagebox.showinfo('Informacja Systemowa', 'Proszę Utworzyć Wpis')
+
+    def veryfication():
+        if b1.get():
+            if b2.get():
+                if b3.get():
+                    if b4.get():
+                        if b5.get():
+                            tk.messagebox.showinfo('OK', 'Wszystkie Parametry Zostały Przypisane Poprawnie')
+                            checking()
+
+                        else:
+                            tk.messagebox.showerror('Error', 'Nazwa Struktury Musi Być Zaewidencjonowana')
+                    else:
+                        tk.messagebox.showerror('Error', 'Numer Personalny Pracownika Musi Być Przypisany')
+                else:
+                    tk.messagebox.showerror('Error', 'Numer Telefonu Pracownika Musi Być Podany')
+            else:
+                tk.messagebox.showerror('Error', 'Nazwisko Pracownika Musi Być Podane')
+        else:
+            tk.messagebox.showerror('Error', 'Imię Pracownika Musi Być Podane')
+
+    def display_pracownicy():
+        con = sqlite3.connect('factory_db')
+        cur = con
+        results=cur.execute('select * from pracownicy')
+        w=results.fetchall()
+        if len(w)>0:
+            window = tk.Tk()
+            window.title('Dane Pracowników')
+            window.geometry('1050x800')
             window.configure(background='#b3b3b3')
-            columns = ('c1', 'c2', 'c3', 'c4', 'c5','c6')
+            # define columns
+            columns = ('c1', 'c2', 'c3', 'c4', 'c5')
             tree = tk.ttk.Treeview(window, columns=columns, show='headings', height=52)
             # define headings
             tree.heading('c1', text='Id')
-            tree.heading('c2', text='Numer Personalny')
-            tree.heading('c3', text='Dzień')
-            tree.heading('c4', text='Godzina Rozpoczęcia Pracy')
-            tree.heading('c5', text='Dzień Zakończenia Pracy')
-            tree.heading('c6', text='Godzina Zakończenia Pracy')
+            tree.heading('c2', text='Imie Pracownika')
+            tree.heading('c3', text='Nazwisko Pracownika')
+            tree.heading('c4', text='Numer Telefonu')
+            tree.heading('c5', text='Numer Personalny')
+
             # add data to the treeview
             con = sqlite3.connect('factory_db')
             cur = con
-            for row in cur.execute('select * from wejscie'):
-                tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4],row[5]))
+            for row in cur.execute('select id,imie, nazwisko, numer_telefonu,numer_personalny from pracownicy'):
+                tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4]))
                 tree.grid(row=0, column=0, sticky='n')
                 # add a scrollbar
                 scrollbar = ttk.Scrollbar(window, orient=tk.VERTICAL, command=tree.yview)
                 tree.configure(yscroll=scrollbar.set)
                 scrollbar.grid(row=0, column=1, sticky='ns')
                 con.commit()
-        if len(d)<1:
-            messagebox.showinfo('Informacja Systemowa','Baza Danych jest Pusta')
+        else:
+            messagebox.showinfo('Informacja Systemowa','Baza Danych Jest Pusta')
 
+
+    def display_numery_pers():
+        con = sqlite3.connect('factory_db')
+        cur = con
+        results=cur.execute('select * from numery_personalne')
+        w=results.fetchall()
+        if len(w)>0:
+            window = tk.Tk()
+            window.title('Numery Personalne')
+            window.geometry('650x800')
+            window.configure(background='#b3b3b3')
+            # define columns
+            columns = ('c1', 'c2', 'c3')
+            tree = tk.ttk.Treeview(window, columns=columns, show='headings', height=52)
+            # define headings
+            tree.heading('c1', text='Id')
+            tree.heading('c2', text='Numer Personalny')
+            tree.heading('c3', text='Nazwa Działu')
+
+            # add data to the treeview
+            con = sqlite3.connect('factory_db')
+            cur = con
+            for row in cur.execute(
+                'select id,numer_personalny,nazwa_dzialu from numery_personalne'):
+                tree.insert('', tk.END, values=(row[0], row[1], row[2]))
+                tree.grid(row=0, column=0, sticky='NE')
+                # add a scrollbar
+                scrollbar = ttk.Scrollbar(window, orient=tk.VERTICAL, command=tree.yview)
+                tree.configure(yscroll=scrollbar.set)
+                scrollbar.grid(row=0, column=1, sticky='ns')
+                con.commit()
+        else:
+            messagebox.showinfo('Informacja Systemowa','Baza Danych Jest Pusta')
+
+    def to_excel():
+        workbook = Workbook('Zestawienie_Pracowników.xlsx')
+        worksheet = workbook.add_worksheet('Dane Pracowników')
+        con = sqlite3.connect('factory_db')
+        cur = con
+        mysel = cur.execute("select * from pracownicy")
+        for i, row in enumerate(mysel):
+            for j, value in enumerate(row):
+                worksheet.write(i, j, row[j])
+        worksheet = workbook.add_worksheet('Weryfikacja Numerów')
+        mysel1 = cur.execute("select * from numery_personalne")
+        for i, row in enumerate(mysel1):
+            for j, value in enumerate(row):
+                worksheet.write(i, j, row[j])
+        workbook.close()
+        window.destroy()
+
+    def to_upper(*args):
+        var.set(var.get().upper())
+        var1.set(var1.get().upper())
+        var2.set(var2.get().upper())
+        var3.set(var3.get().upper())
+        var4.set(var4.get().upper())
+        var5.set(var5.get().upper())
+        var6.set(var6.get().upper())
 
     def pasword():
         def f1():
             if bb7.get() == c1:
-                narzedzia()
-                window1.destroy()
-                window.iconify()
+                q = tk.messagebox.askyesno('Informacja Systemowa', "Chcesz Wyczyścić Tabelę Pracownicy?")
+                if q == 1:
+                    cur.execute("delete from pracownicy")
+                    con.commit()
+                    messagebox.showinfo('Informacja Systemowa', 'Baza Pracowników Została Wyczyszczona')
+                    window1.title('Weryfikacja Uprawnień')
+                    window.destroy()
+                elif q == 0:
+                    time.sleep(1)
+                    messagebox.showinfo('Informacja Systemowa', 'Działanie Zostało Przerwane, Baza Danych Nie Została Wyczyszczona')
+                    window1.destroy()
+                    window.destroy()
             else:
                 messagebox.showinfo('Błąd Danych', 'Hasło Nie Jest Poprawne')
-                window1.destroy()
+
         window1 = Tk()
         window1.geometry('450x300')
         window1.title('Weryfikacja Uprawnień')
         window1.configure(background='#b3b3b3')
-        ll = Label(window1, text='Podaj Hasło', font=('arial', 25),background='white')
+        ll = Label(window1, text='Podaj Hasło', font=('arial', 25), background='white')
         ll.grid(row=1, column=1, sticky='N', padx=20, pady=20)
         c1 = 'admin1'
-        bb7 = Entry(window1, font=('arial', 25),show='*')
+        bb7 = Entry(window1, font=('arial', 25), show='*')
         bb7.grid(row=2, column=1, sticky='N', padx=20, pady=20)
         bb2 = Button(window1, text='Wejdź', command=f1)
         bb2.grid(row=3, column=1, sticky='N', padx=20, pady=20)
 
+    def pasword2():
+        def f1():
+            if bb7.get() == c1:
+                q = tk.messagebox.askyesno('Informacja Systemowa', "Chcesz Wyczyścić Tabelę Numery Personalne?")
+                if q == 1:
+                    cur.execute("delete from numery_personalne")
+                    con.commit()
+                    window1.title('Weryfikacja Uprawnień')
+                    messagebox.showinfo('Informacja Systemowa', 'Baza Została Wyczyszczona')
+                    window.destroy()
+                    window1.destroy()
+
+                elif q == 0:
+                    time.sleep(1)
+                    window.destroy()
+                    window1.destroy()
+                    messagebox.showinfo('Informacja Systemowa', 'Działanie Zostało Przerwane, Baza Danych Nie Została Wyczyszczona')
+            else:
+                messagebox.showinfo('Błąd Danych', 'Hasło Nie Jest Poprawne')
+
+        window1 = Tk()
+        window1.geometry('450x300')
+        window1.title('Weryfikacja Uprawnień')
+        window1.configure(background='#b3b3b3')
+        ll = Label(window1, text='Podaj Hasło', font=('arial', 25), background='white')
+        ll.grid(row=1, column=1, sticky='N', padx=20, pady=20)
+        c1 = 'admin1'
+        bb7 = Entry(window1, font=('arial', 25), show='*')
+        bb7.grid(row=2, column=1, sticky='N', padx=20, pady=20)
+        bb2 = Button(window1, text='Wejdź', command=f1)
+        bb2.grid(row=3, column=1, sticky='N', padx=20, pady=20)
+
+
+    var = tk.StringVar(window)
+    var1 = tk.StringVar(window)
+    var2 = tk.StringVar(window)
+    var3 = tk.StringVar(window)
+    var4 = tk.StringVar(window)
+    var5 = tk.StringVar(window)
+    var6 = tk.StringVar(window)
+
+    l_tit = Label(window, text='Zakładanie Karty Pracownika', font=('arial', 40), background='white')
+    l_tit.grid(row=0, column=0, pady=20, columnspan=1, sticky='N')
+    l1 = Label(window, text='Podaj Imię Pracownika:', font=('arail', 20), background='white')
+    l1.grid(row=1, column=0, pady=10, padx=10, sticky='W')
+    b1 = Entry(window, textvariable=var, font=('arail', 25))
+    b1.grid(row=1, column=2, padx=10, pady=8, sticky='W')
+    l2 = Label(window, text='Podaj Nazwisko Pracownika:', font=('arial', 20), background='white')
+    l2.grid(row=2, column=0, pady=10, padx=10, sticky='W')
+    b2 = Entry(window, textvariable=var1, font=('arail', 25))
+    b2.grid(row=2, column=2, padx=10, pady=8, sticky='N')
+    l3 = Label(window, text='Podaj Numer Telefonu Pracownika:', font=('arial', 20), background='white')
+    l3.grid(row=3, column=0, pady=10, padx=10, sticky='W')
+    b3 = Entry(window, textvariable=var2, font=('arail', 25))
+    b3.grid(row=3, column=2, padx=10, pady=8, sticky='N')
+    l4 = Label(window, text='Nadaj Numer Personalny Pracownika:', font=('arial', 20), background='white')
+    l4.grid(row=4, column=0, pady=10, padx=10, sticky='W')
+    b4 = Entry(window, textvariable=var3, font=('arail', 25))
+    b4.grid(row=4, column=2, padx=10, pady=8, sticky='N')
+    l5 = Label(window, text='Podaj Nazwę Struktury Organizacyjnej:', font=('arial', 20), background='white')
+    l5.grid(row=5, column=0, pady=10, padx=10, sticky='W')
+    b5 = Entry(window, textvariable=var4, font=('arail', 25))
+    b5.grid(row=5, column=2, padx=10, pady=8, sticky='N')
+    b8 = Button(window, text='SPRAWDŹ', command=veryfication, font=('arial', 30), background='#3399ff')
+    b8.grid(row=8, column=0, padx=10, pady=50, sticky='N')
+    b9 = Button(window, text='ZATWIERDŹ', command=save, font=('arial', 30), background='Green')
+    b9.grid(row=8, column=2, padx=10, pady=50, sticky='N')
+
+    var.trace_add('write', to_upper)
+    var1.trace_add('write', to_upper)
+    var2.trace_add('write', to_upper)
+    var3.trace_add('write', to_upper)
+    var4.trace_add('write', to_upper)
+    var5.trace_add('write', to_upper)
+    var6.trace_add('write', to_upper)
     menubar = Menu(window)
     window.config(menu=menubar)
     filemenu = Menu(menubar, tearoff=0)
     settingmenu = Menu(menubar, tearoff=0)
-    viewmenu = Menu(menubar, tearoff=0)
     menubar.add_cascade(
         label="Zamknij",
         menu=filemenu)
     menubar.add_cascade(
-        label="Podgląd",
-        menu=viewmenu)
-    menubar.add_cascade(
-        label="Narzędzia",
+        label="Narzędzia Administracyje",
         menu=settingmenu)
-    filemenu.add_command(label="Wyjście", command=window.destroy)
-    viewmenu.add_command(label="Wylicz Czas Pracy", command=explore_work_time)
-    viewmenu.add_command(label="Podgląd Tabeli", command=explore_table)
-    settingmenu.add_command(label="Uruchom Narzędzia Administracyjne", command=pasword)
-'''
-PRZEJSICE NA MODUŁ KADR - NUMERY PERSONALNE ORAZ PRAWOCOWNICY
-PRZEJSICE NA MODUŁ KADR - NUMERY PERSONALNE ORAZ PRAWOCOWNICY
-PRZEJSICE NA MODUŁ KADR - NUMERY PERSONALNE ORAZ PRAWOCOWNICY
-'''
-def karta_pers():
+    filemenu.add_command(label="Wyjście", command=window.quit)
+    settingmenu.add_command(label="Podglą Tabeli Pracowników", command=display_pracownicy)
+    settingmenu.add_command(label="Podglą Tabeli Numerów Personalnych",command=display_numery_pers )
+    settingmenu.add_command(label="Czyszczenie Tabeli Pracowników", command=pasword)
+    settingmenu.add_command(label="Czyszczenie Tabeli Numery Personalne", command=pasword2)
+    settingmenu.add_separator()
+    settingmenu.add_cascade(label='Pobierz Listę Pracowników', command=to_excel)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def karta_pers1():
     window = Tk()
     window.title('System Zarządzania Personelem')
     window.config(background='#b3b3b3')
@@ -1356,23 +1454,25 @@ def zam():
     var3.trace_add('write', to_upper)
 
 
+
 def okienko():
     #tworznie widoku z 5 przyciskami
     window = Tk()
     window.title('System Zarządzania Przedsiębiorstwem')
     window.geometry('450x400')
     window.config(background='#b3b3b3')
-    b1=Button(window, text='Ewidencja Czasu Pracy',command=czas_pracy,font=('arial',15),width=20)
-    b1.grid(row=1,column=0,padx=10,pady=10,sticky='W')
 
-    b2=Button(window, text='Karta Pracownika',command=karta_pers,font=('arial',15),width=20)
-    b2.grid(row=2,column=0,padx=10,pady=10,sticky='W')
+    menubar=Menu(window)
+    filemenu=Menu(menubar,tearoff=0)
+    filemenu.add_cascade(label=' Karta Pracownika',command=karta_pers)
+    filemenu.add_cascade(label='Karta Materiałowa', command=materialy)
+    menubar.add_cascade(label='Moduły',menu=filemenu)
+    window.config(menu=menubar)
+
+    
 
     b3=Button(window, text='Status Produkcji',command=produkcja,font=('arial',15),width=20)
     b3.grid(row=3,column=0,padx=10,pady=10,sticky='W')
-
-    b4=Button(window, text='Karta Materiałowa',command=materialy,font=('arial',15),width=20)
-    b4.grid(row=4,column=0,padx=10,pady=10,sticky='W')
 
     b5=Button(window, text='Zużycie Materiałów',command=zuzycie,font=('arial',15),width=20)
     b5.grid(row=5,column=0,padx=10,pady=10,sticky='W')
