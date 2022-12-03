@@ -18,7 +18,7 @@ cur=con
 #cur.execute("drop table status_produkcji")
 
 '''
-PRZEJSICE NA MODUŁ KADR - NUMERY PERSONALNE ORAZ PRAWOCOWNICY
+ MODUŁ KADR - NUMERY PERSONALNE ORAZ PRAWOCOWNICY
 
 '''
 
@@ -208,6 +208,7 @@ def karta_pers():
         for i, row in enumerate(mysel1):
             for j, value in enumerate(row):
                 worksheet.write(i, j, row[j])
+        messagebox.showinfo('Informacja Systemowa','Baza Danych Została Zaimportowana')
         workbook.close()
         window.destroy()
 
@@ -345,28 +346,9 @@ def karta_pers():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def karta_pers1():
+def karta_maszyn():
     window = Tk()
-    window.title('System Zarządzania Personelem')
+    window.title('Karta Maszyn')
     window.config(background='#b3b3b3')
     window.state('zoomed')
 
@@ -374,178 +356,114 @@ def karta_pers1():
     con = sqlite3.connect('factory_db')
     cur = con
     cur.execute(
-        'create table if not exists pracownicy (id integer primary key autoincrement, imie, nazwisko, numer_telefonu,numer_personalny)')
-    # cur.execute('drop table pracownicy')
-    cur.execute(
-        'create table if not exists numery_personalne (id integer primary key autoincrement,numer_personalny,nazwa_dzialu,czas_pracy_z_etatu,pensja_zasadnicza)')
-    # cur.execute('drop table numery_personalne')
-    def save():
-        if b1.get() and b2.get() and b3.get() and b4.get() and b5.get() and b6.get():
+       'create table if not exists maszyny (id integer primary key autoincrement, marka, model,typ,rok_produkcji)')
+    #cur.execute('drop table maszyny')
+    
+    def save_m():
+        if b1.get() and b2.get() and b3.get() and b4.get():
             con = sqlite3.connect('factory_db')
             cur = con
             cur.execute(
-                'insert into pracownicy (imie,nazwisko,numer_telefonu,numer_personalny) values(:imie,:nazwisko,:numer_telefonu,:numer_personalny)',
+                'insert into maszyny (marka,model,typ,rok_produkcji) values(:marka,:model,:typ,:rok_produkcji)',
                 {
-                    'imie': b1.get(),
-                    'nazwisko': b2.get(),
-                    'numer_telefonu': b3.get(),
-                    'numer_personalny': b4.get()
+                    'marka': b1.get(),
+                    'model': b2.get(),
+                    'typ': b3.get(),
+                    'rok_produkcji': b4.get()
                 })
             con.commit()
-            cur.execute(
-                'insert into numery_personalne (numer_personalny,nazwa_dzialu, czas_pracy_z_etatu,pensja_zasadnicza)values(:numer_personalny,:nazwa_dzialu,:czas_pracy_z_etatu,:pensja_zasadnicza)',
-                {
-                    'numer_personalny': b4.get(),
-                    'nazwa_dzialu': b5.get(),
-                    'czas_pracy_z_etatu': b6.get(),
-                    'pensja_zasadnicza': b7.get()
-                })
-            con.commit()
+            tk.messagebox.showinfo('Informacja', 'Wpis Został Utworzony')
             b1.delete(0, END)
             b2.delete(0, END)
             b3.delete(0, END)
             b4.delete(0, END)
-            b5.delete(0, END)
-            b6.delete(0, END)
-            b7.delete(0, END)
         else:
             tk.messagebox.showwarning('Błąd Danych', 'Brakuje Jednego Z Wymaganych Pól')
 
-    def checking():
+    def change_m():
         con = sqlite3.connect('factory_db')
         cur = con
-        results = cur.execute("SELECT * from pracownicy WHERE numer_personalny= :numer_personalny", {
-            'numer_personalny': b4.get()
+        cur.execute(
+            'update maszyny set marka = :marka,model = :model,typ = :typ,rok_produkcji = :rok_produkcji where id = :id',
+        {
+            'marka': b1.get(),
+            'model': b2.get(),
+            'typ': b3.get(),
+            'rok_produckji': b4.get(),
+            'id':b5.get()
         })
-        if results.fetchall():
-            w = tk.messagebox.askquestion('Informacja Systemowa',
-                                          'Wpis Dla Podanego Pracownika Już Istnieje-Czy Chcesz Go Nadpisać?')
-            if w == 'yes':
-                cur.execute(
-                    'update pracownicy set imie = :imie,nazwisko = :nazwisko,numer_telefonu = :numer_telefonu,numer_personalny = :numer_personalny where numer_personalny = :numer_personalny',
-                    {
-                        'imie': b1.get(),
-                        'nazwisko': b2.get(),
-                        'numer_telefonu': b3.get(),
-                        'numer_personalny': b4.get()
-                    })
-                con.commit()
-                cur.execute(
-                    'update numery_personalne set numer_personalny = :numer_personalny,nazwa_dzialu = :nazwa_dzialu,czas_pracy_z_etatu = :czas_pracy_z_etatu,pensja_zasadnicza = :pensja_zasadnicza where numer_personalny = :numer_personalny',
-                    {
-                        'numer_personalny': b4.get(),
-                        'nazwa_dzialu': b5.get(),
-                        'czas_pracy_z_etatu': b6.get(),
-                        'pensja_zasadnicza': b7.get()
-                    })
-                con.commit()
-                tk.messagebox.showinfo('Informacja', 'Zmainy Zostały Zapisane')
-                b1.delete(0, END)
-                b2.delete(0, END)
-                b3.delete(0, END)
-                b4.delete(0, END)
-                b5.delete(0, END)
-                b6.delete(0, END)
+        con.commit()
+        tk.messagebox.showinfo('Informacja', 'Zmainy Zostały Zapisane')
+        b1.delete(0, END)
+        b2.delete(0, END)
+        b3.delete(0, END)
+        b4.delete(0, END)
+        b5.delete(0, END)
 
-            if w == 'no':
-                tk.messagebox.showinfo('Informacja Systemowa', 'Zmiany Zostały Odrzucone')
-        else:
-            messagebox.showinfo('Informacja Systemowa', 'Proszę Utworzyć Wpis')
-
-    def veryfication():
+    def veryfication_m():
         if b1.get():
             if b2.get():
                 if b3.get():
                     if b4.get():
                         if b5.get():
-                            if b6.get():
-                                if b7.get():
-                                    tk.messagebox.showinfo('OK', 'Wszystkie Parametry Zostały Przypisane Poprawnie')
-                                    checking()
-                                else:
-                                    tk.messagebox.showerror('Error', 'Pensja Zasadnicza Musi Zostać Ustalona')
-                            else:
-                                tk.messagebox.showerror('Error', 'Czas Pracy Wyrażony w Godzinach Musi Być Podany')
+                            tk.messagebox.showinfo('OK', 'Wszystkie Parametry Zostały Przypisane Poprawnie')
+                            change_m()
                         else:
-                            tk.messagebox.showerror('Error', 'Nazwa Struktury Musi Być Zaewidencjonowana')
+                            tk.messagebox.showerror('Error', 'Numer ID Musi Zostać Uzupełniony')
                     else:
-                        tk.messagebox.showerror('Error', 'Numer Personalny Pracownika Musi Być Przypisany')
+                        tk.messagebox.showerror('Error', 'Rok Maszyny Musi Zostać Podany')
                 else:
-                    tk.messagebox.showerror('Error', 'Numer Telefonu Pracownika Musi Być Podany')
+                    tk.messagebox.showerror('Error', 'Typ Maszyny Musi Zostać Podany')
             else:
-                tk.messagebox.showerror('Error', 'Nazwisko Pracownika Musi Być Podane')
+                tk.messagebox.showerror('Error', 'Model Maszyny Musi ZOstać Podany')
         else:
-            tk.messagebox.showerror('Error', 'Imię Pracownika Musi Być Podane')
+            tk.messagebox.showerror('Error', 'Marka Maszyny Musi Zostać Podana')
 
-    def display_pracownicy():
-        window = tk.Tk()
-        window.title('Dane Pracowników')
-        window.geometry('1050x800')
-        window.configure(background='#b3b3b3')
-        # define columns
-        columns = ('c1', 'c2', 'c3', 'c4', 'c5')
-        tree = tk.ttk.Treeview(window, columns=columns, show='headings', height=52)
-        # define headings
-        tree.heading('c1', text='Id')
-        tree.heading('c2', text='Imie Pracownika')
-        tree.heading('c3', text='Nazwisko Pracownika')
-        tree.heading('c4', text='Numer Telefonu')
-        tree.heading('c5', text='Numer Personalny')
-
-        # add data to the treeview
+    def display_maszyny():
         con = sqlite3.connect('factory_db')
         cur = con
-        for row in cur.execute('select id,imie, nazwisko, numer_telefonu,numer_personalny from pracownicy'):
-            tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4]))
-            tree.grid(row=0, column=0, sticky='n')
-            # add a scrollbar
-            scrollbar = ttk.Scrollbar(window, orient=tk.VERTICAL, command=tree.yview)
-            tree.configure(yscroll=scrollbar.set)
-            scrollbar.grid(row=0, column=1, sticky='ns')
-            con.commit()
+        results=cur.execute('select * from maszyny')
+        w=results.fetchall()
+        if len(w)>0:
+            window = tk.Tk()
+            window.title('Spis Maszyn')
+            window.geometry('1050x800')
+            window.configure(background='#b3b3b3')
+            # define columns
+            columns = ('c1', 'c2', 'c3', 'c4', 'c5')
+            tree = tk.ttk.Treeview(window, columns=columns, show='headings', height=52)
+            # define headings
+            tree.heading('c1', text='Id')
+            tree.heading('c2', text='Marka Maszyny')
+            tree.heading('c3', text='Model Maszyny')
+            tree.heading('c4', text='Typ Maszyny')
+            tree.heading('c5', text='Rok Produckju')
 
-    def display_numery_pers():
-        window = tk.Tk()
-        window.title('Numery Personalne')
-        window.geometry('1050x800')
-        window.configure(background='#b3b3b3')
-        # define columns
-        columns = ('c1', 'c2', 'c3', 'c4', 'c5')
-        tree = tk.ttk.Treeview(window, columns=columns, show='headings', height=52)
-        # define headings
-        tree.heading('c1', text='Id')
-        tree.heading('c2', text='Numer Personalny')
-        tree.heading('c3', text='Nazwa Działu')
-        tree.heading('c4', text='Wymiar Czasu Pracy')
-        tree.heading('c5', text='Pensja Zasadnicza')
+            # add data to the treeview
+            con = sqlite3.connect('factory_db')
+            cur = con
+            for row in cur.execute('select id,marka, model, typ,rok_produkcji from maszyny'):
+                tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4]))
+                tree.grid(row=0, column=0, sticky='n')
+                # add a scrollbar
+                scrollbar = ttk.Scrollbar(window, orient=tk.VERTICAL, command=tree.yview)
+                tree.configure(yscroll=scrollbar.set)
+                scrollbar.grid(row=0, column=1, sticky='ns')
+                con.commit()
+        else:
+            messagebox.showinfo('Informacja Systemowa','Baza Danych Jest Pusta')
 
-        # add data to the treeview
-        con = sqlite3.connect('factory_db')
-        cur = con
-        for row in cur.execute(
-                'select id,numer_personalny,nazwa_dzialu,czas_pracy_z_etatu,pensja_zasadnicza from numery_personalne'):
-            tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4]))
-            tree.grid(row=0, column=0, sticky='NE')
-            # add a scrollbar
-            scrollbar = ttk.Scrollbar(window, orient=tk.VERTICAL, command=tree.yview)
-            tree.configure(yscroll=scrollbar.set)
-            scrollbar.grid(row=0, column=1, sticky='ns')
-            con.commit()
 
     def to_excel():
-        workbook = Workbook('Zestawienie_Pracowników.xlsx')
-        worksheet = workbook.add_worksheet('Dane Pracowników')
+        workbook = Workbook('Zestawienie_Maszyn.xlsx')
+        worksheet = workbook.add_worksheet('Charakterystyka Maszyn')
         con = sqlite3.connect('factory_db')
         cur = con
-        mysel = cur.execute("select * from pracownicy")
+        mysel = cur.execute("select * from maszyny")
         for i, row in enumerate(mysel):
             for j, value in enumerate(row):
                 worksheet.write(i, j, row[j])
-        worksheet = workbook.add_worksheet('Weryfikacja Numerów')
-        mysel1 = cur.execute("select * from numery_personalne")
-        for i, row in enumerate(mysel1):
-            for j, value in enumerate(row):
-                worksheet.write(i, j, row[j])
+        messagebox.showinfo('Informacja Systemowa','Baza Danych Została Zaimportowana')
         workbook.close()
         window.destroy()
 
@@ -557,19 +475,20 @@ def karta_pers1():
         var4.set(var4.get().upper())
         var5.set(var5.get().upper())
         var6.set(var6.get().upper())
+
     def pasword():
         def f1():
             if bb7.get() == c1:
-                q = tk.messagebox.askyesno('Informacja Systemowa', "Chcesz Wyczyścić Tabelę Pracownicy?")
+                q = tk.messagebox.askyesno('Informacja Systemowa', "Chcesz Wyczyścić Bazę Maszyn?")
                 if q == 1:
-                    cur.execute("delete from pracownicy")
+                    cur.execute("delete from maszyny")
                     con.commit()
-                    messagebox.showinfo('Informacja Systemowa', 'Baza Pracowników Została Wyczyszczona')
+                    messagebox.showinfo('Informacja Systemowa', 'Baza Maszyn Została Wyczyszczona')
                     window1.title('Weryfikacja Uprawnień')
                     window.destroy()
                 elif q == 0:
-                    time.sleep(5)
-                    messagebox.showinfo('Informacja Systemowa', 'Działanie Zostało Przerwane')
+                    time.sleep(1)
+                    messagebox.showinfo('Informacja Systemowa', 'Działanie Zostało Przerwane, Baza Danych Nie Została Wyczyszczona')
                     window1.destroy()
                     window.destroy()
             else:
@@ -579,101 +498,13 @@ def karta_pers1():
         window1.geometry('450x300')
         window1.title('Weryfikacja Uprawnień')
         window1.configure(background='#b3b3b3')
-        ll = Label(window1, text='Podaj Hasło', font=('arial', 25),background='white')
+        ll = Label(window1, text='Podaj Hasło', font=('arial', 25), background='white')
         ll.grid(row=1, column=1, sticky='N', padx=20, pady=20)
         c1 = 'admin1'
-        bb7 = Entry(window1, font=('arial', 25),show='*')
+        bb7 = Entry(window1, font=('arial', 25), show='*')
         bb7.grid(row=2, column=1, sticky='N', padx=20, pady=20)
         bb2 = Button(window1, text='Wejdź', command=f1)
         bb2.grid(row=3, column=1, sticky='N', padx=20, pady=20)
-
-    def pasword2():
-        def f1():
-            if bb7.get() == c1:
-                q = tk.messagebox.askyesno('Informacja Systemowa', "Chcesz Wyczyścić Tabelę Numery Personalne?")
-                if q == 1:
-                    cur.execute("delete from numery_personalne")
-                    con.commit()
-                    window1.title('Weryfikacja Uprawnień')
-                    messagebox.showinfo('Informacja Systemowa', 'Baza Została Wyczyszczona')
-                    window.destroy()
-                    window1.destroy()
-
-                elif q == 0:
-                    time.sleep(5)
-                    window.destroy()
-                    window1.destroy()
-                    messagebox.showinfo('Informacja Systemowa', 'Działanie Zostało Przerwane')
-            else:
-                messagebox.showinfo('Błąd Danych', 'Hasło Nie Jest Poprawne')
-
-        window1 = Tk()
-        window1.geometry('450x300')
-        window1.title('Weryfikacja Uprawnień')
-        window1.configure(background='#b3b3b3')
-        ll = Label(window1, text='Podaj Hasło', font=('arial', 25),background='white')
-        ll.grid(row=1, column=1, sticky='N', padx=20, pady=20)
-        c1 = 'admin1'
-        bb7 = Entry(window1, font=('arial', 25),show='*')
-        bb7.grid(row=2, column=1, sticky='N', padx=20, pady=20)
-        bb2 = Button(window1, text='Wejdź', command=f1)
-        bb2.grid(row=3, column=1, sticky='N', padx=20, pady=20)
-
-    def pasword3():
-        def f1():
-            if bb7.get() == c1:
-                con = sqlite3.connect('factory_db')
-                cur = con
-                results = cur.execute("select * from wejscie")
-                d = results.fetchall()
-                if len(d) > 0:
-                    dt = cal.get_date()
-                    str_dt4 = dt.strftime("%Y-%m-%d")
-                    n = str_dt4
-                    dzis = datetime.today()
-                    dz1 = dzis.strftime("%Y-%m-%d")
-                    k = np.busday_count(n, dz1)
-                    k1=k*60
-                    window1.destroy()
-                    window = tk.Tk()
-                    window.title('Okresowy Czasu Pracy')
-                    window.geometry('1450x1000')
-                    # define columns
-                    columns = ('c1', 'c2', 'c3','c4')
-                    tree = ttk.Treeview(window, columns=columns, show='headings', height=52)
-                    # define headings
-                    tree.heading('c1', text='Numer Wiersza')
-                    tree.heading('c2', text='Numer Pracownika')
-                    tree.heading('c3', text='Całkowity Czas Pracy')
-                    tree.heading('c4', text='Całkowity Czas Pracy Wynikający Z Etatu')
-                    # add data to the treeview
-                    rows = cur.execute(
-                    "select wejscie.id,numer_pers,SUM(ROUND((JULIANDAY(godzina_z) - JULIANDAY(godzina_r)) *1440 )) as dif,czas_pracy_z_etatu *60 from wejscie inner join numery_personalne on wejscie.numer_pers = numery_personalne.numer_personalny where dzien > :d1 group by numer_pers having dif >1 order by wejscie.id",{
-                        'd1':str_dt4,
-                        })
-                    for row in rows:
-                        tree.insert('', tk.END, values=(row[0], row[1], row[2],row[3]))
-                        tree.grid(row=0, column=0, sticky='nsew')
-                        # add a scrollbar
-                        scrollbar = ttk.Scrollbar(window, orient=tk.VERTICAL, command=tree.yview)
-                        tree.configure(yscroll=scrollbar.set)
-                        scrollbar.grid(row=0, column=1, sticky='ns')
-                if len(d) < 1:
-                    window1.destroy()
-                    messagebox.showinfo('Informacja Systemowa', 'Baza Danych Nie Zawiera Odnotowanego Czasu')
-        window1 = Tk()
-        window1.geometry('450x300')
-        window1.title('Weryfikacja Uprawnień')
-        window1.configure(background='#b3b3b3')
-        ll = Label(window1, text='Podaj Hasło', font=('arial', 25),background='white')
-        ll.grid(row=1, column=1, sticky='N', padx=20, pady=20)
-        c1 = 'admin1'
-        bb7 = Entry(window1, font=('arial', 25),show='*')
-        bb7.grid(row=2, column=1, sticky='N', padx=20, pady=20)
-        bb2 = Button(window1, text='Wejdź',font=('arial',15),command=f1)
-        bb2.grid(row=3,column=1,padx=10,pady=10)
-        cal = DateEntry(window1, selectmode='day', date_pattern='yyyy-MM-dd',font=('arial',15))
-        cal.grid(row=4, column=1, padx=15, pady=10,sticky='W')
 
     var = tk.StringVar(window)
     var1 = tk.StringVar(window)
@@ -683,49 +514,33 @@ def karta_pers1():
     var5 = tk.StringVar(window)
     var6 = tk.StringVar(window)
 
-    l_tit = Label(window, text='Zakładanie Karty Pracownika', font=('arial', 40), background='white')
+    l_tit = Label(window, text='Zakładanie Karty Maszyn', font=('arial', 40), background='white')
     l_tit.grid(row=0, column=0, pady=20, columnspan=1, sticky='N')
-    l1 = Label(window, text='Podaj Imię Pracownika:', font=('arail', 20), background='white')
+    l1 = Label(window, text='Podaj Markę:', font=('arail', 20), background='white')
     l1.grid(row=1, column=0, pady=10, padx=10, sticky='W')
     b1 = Entry(window, textvariable=var, font=('arail', 25))
     b1.grid(row=1, column=2, padx=10, pady=8, sticky='W')
-    l2 = Label(window, text='Podaj Nazwisko Pracownika:', font=('arial', 20), background='white')
+    l2 = Label(window, text='Podaj Model:', font=('arial', 20), background='white')
     l2.grid(row=2, column=0, pady=10, padx=10, sticky='W')
     b2 = Entry(window, textvariable=var1, font=('arail', 25))
     b2.grid(row=2, column=2, padx=10, pady=8, sticky='N')
-    l3 = Label(window, text='Podaj Numer Telefonu Pracownika:', font=('arial', 20), background='white')
+    l3 = Label(window, text='Podaj Typ:', font=('arial', 20), background='white')
     l3.grid(row=3, column=0, pady=10, padx=10, sticky='W')
     b3 = Entry(window, textvariable=var2, font=('arail', 25))
     b3.grid(row=3, column=2, padx=10, pady=8, sticky='N')
-    l4 = Label(window, text='Nadaj Numer Personalny Pracownikowi:', font=('arial', 20), background='white')
+    l4 = Label(window, text='Podaj Rok Produkcji:', font=('arial', 20), background='white')
     l4.grid(row=4, column=0, pady=10, padx=10, sticky='W')
     b4 = Entry(window, textvariable=var3, font=('arail', 25))
     b4.grid(row=4, column=2, padx=10, pady=8, sticky='N')
-    l5 = Label(window, text='Podaj Nazwę Struktury Organizacyjnej:', font=('arial', 20), background='white')
+    l5 = Label(window, text='Podaj ID:', font=('arial', 20), background='white')
     l5.grid(row=5, column=0, pady=10, padx=10, sticky='W')
     b5 = Entry(window, textvariable=var4, font=('arail', 25))
     b5.grid(row=5, column=2, padx=10, pady=8, sticky='N')
-    l6 = Label(window, text='Podaj Czas Pracy Wynikający Z Formy Zatrudnienia:', font=('arial', 20), background='white')
-    l6.grid(row=6, column=0, pady=10, padx=10, sticky='W')
-    b6 = Entry(window, textvariable=var5, font=('arail', 25))
-    b6.grid(row=6, column=2, padx=10, pady=8, sticky='N')
-    l7 = Label(window, text='Ustal Pensję Zasadniczą Pracownika:', font=('arial', 20), background='white')
-    l7.grid(row=7, column=0, pady=10, padx=10, sticky='W')
-    b7 = Entry(window, textvariable=var6, font=('arail', 25))
-    b7.grid(row=7, column=2, padx=10, pady=8, sticky='N')
-    b8 = Button(window, text='SPRAWDŹ', command=veryfication, font=('arial', 30), background='#3399ff')
+    b8 = Button(window, text='SPRAWDŹ', command=veryfication_m, font=('arial', 30), background='#3399ff')
     b8.grid(row=8, column=0, padx=10, pady=50, sticky='N')
-    b9 = Button(window, text='ZATWIERDŹ', command=save, font=('arial', 30), background='Green')
+    b9 = Button(window, text='ZATWIERDŹ', command=save_m, font=('arial', 30), background='Green')
     b9.grid(row=8, column=2, padx=10, pady=50, sticky='N')
-    b10 = Button(window, text='Sprawdź Tabelę Pracowników', command=display_pracownicy, font=('arial', 15),
-                 background='#99cc00')
-    b10.grid(row=9, column=2, padx=10, pady=10, sticky='N')
-    b11 = Button(window, text='Sprawdź Tablę Numerów Personalnych', command=display_numery_pers, font=('arial', 15),
-                 background='#99cc00')
-    b11.grid(row=9, column=0, padx=10, pady=10, sticky='N')
-    b12 = Button(window, text='Pobierz Zestawienie Pracowników', command=to_excel, font=('arial', 15),
-                 background='#b30000')
-    b12.grid(row=9, column=3, columnspan=2, padx=10, pady=10, sticky='N')
+
     var.trace_add('write', to_upper)
     var1.trace_add('write', to_upper)
     var2.trace_add('write', to_upper)
@@ -744,9 +559,15 @@ def karta_pers1():
         label="Narzędzia Administracyje",
         menu=settingmenu)
     filemenu.add_command(label="Wyjście", command=window.quit)
-    settingmenu.add_command(label="Czyszczenie Tabeli Pracowników",command=pasword)
-    settingmenu.add_command(label="Czyszczenie Tabeli Numery Personalne",command=pasword2)
-    settingmenu.add_command(label="Rozliczanie Czasu Pracy",command=pasword3)
+    settingmenu.add_command(label="Podglą Tabeli Pracowników", command=display_maszyny)
+    settingmenu.add_command(label="Czyszczenie Tabeli Pracowników", command=pasword)
+    settingmenu.add_separator()
+    settingmenu.add_cascade(label='Pobierz Listę Maszyn', command=to_excel)
+
+
+
+
+
 
 '''
 PRZEŁĄCZENIE SIĘ NA RAPORTOWANIE PRODUKCJI
@@ -999,14 +820,12 @@ def produkcja():
     l4.grid(padx=20, pady=20, row=5, column=1,sticky='W')
     b4 = Entry(window, width=25, font=('arial', 20),textvariable=var2)
     b4.grid(padx=20, pady=20, row=5, column=2)
-    b5 = Button(window, text="Potwierdź I Dodaj", command=check_if_empty, font=("arial", 20), background="green")
+    b5 = Button(window, text="Zatwierdź I Dodaj", command=check_if_empty, font=("arial", 20), background="green")
     b5.grid(row=7, column=1)
     b6 = Button(window, text="Odrzuć", command=reject, font=("arial", 20), background="red")
     b6.grid(row=7, column=2, pady=25)
     b7 = Button(window, text="Pokaż Swoje Rezultaty", command=show_my, font=("arial", 20), background="Orange")
     b7.grid(row=8, column=2)
-    b10 = Button(window, text="Exportujd Do Excela", command=export_to_excel, font=("arial", 20), background="Blue")
-    b10.grid(row=8, column=1)
     b8 = Entry(window, font=('arial', 20), width=25)
     b8.grid(row=6, column=2, pady=15)
     l8 = Label(window, text="Podaj Numer Zmiany:", font=('arial', 20), bg='white')
@@ -1027,8 +846,10 @@ def produkcja():
         label="Narzędzia Administracyje",
         menu=settingmenu)
     filemenu.add_command(label="Wyjście", command=window.quit)
-    settingmenu.add_command(label="Panel Administratora", command=pasword2)
+    settingmenu.add_command(label="Wyświetl Bazę Sprawozdań", command=pasword2)
     settingmenu.add_command(label="Czyszczenie Bazy Sprawozdań Produkcyjnych", command=pasword)
+    settingmenu.add_separator()
+    settingmenu.add_command(label="Importuj Bazę Sprawdzdań", command=export_to_excel)
     var.trace_add('write', to_upper)
     var1.trace_add('write', to_upper)
     var2.trace_add('write', to_upper)
@@ -1172,6 +993,22 @@ def materialy():
         var1.set(var1.get().upper())
         var2.set(var2.get().upper())
 
+
+
+    def to_excel_mat():
+        workbook = Workbook('materialy.xlsx')
+        worksheet = workbook.add_worksheet()
+        con = sqlite3.connect('factory_db')
+        c = con.cursor()
+        con.execute("select * from material")
+        mysel = c.execute("select * from material")
+        for i, row in enumerate(mysel):
+            for j, value in enumerate(row):
+                worksheet.write(i, j, row[j])
+        messagebox.showinfo('Informacja Systemowa','Baza Danych Została Zaimportowana')
+        workbook.close()
+        window.destroy()
+
     var = tk.StringVar(window)
     var1 = tk.StringVar(window)
     var2 = tk.StringVar(window)
@@ -1188,12 +1025,10 @@ def materialy():
     l3.grid(row=2, column=0, pady=10, padx=10, sticky='W')
     b3 = Entry(window, font=('arail', 20),textvariable=var2)
     b3.grid(row=2, column=1, padx=10, pady=8, sticky='W')
-    b4 = Button(window, text='Zatwierdź', width=15, command=uzupelnione, font=('arial', 20))
+    b4 = Button(window, text='Zatwierdź', width=15, command=uzupelnione, font=('arial', 20),background='green')
     b4.grid(row=5, column=1, padx=10, pady=10, sticky='W')
-    b5 = Button(window, text='Sprawdź', command=sprawdz, width=15, font=('arial', 20))
-    b5.grid(row=4, column=0, padx=10, pady=10, sticky='W')
-    b6 = Button(window, text='Zmień', command=uzupelnione1, width=15, font=('arial', 20))
-    b6.grid(row=4, column=1, padx=10, pady=10, sticky='W')
+    b6 = Button(window, text='Zmień', command=uzupelnione1, width=15, font=('arial', 20),background='yellow')
+    b6.grid(row=5, column=0, padx=10, pady=10, sticky='W')
     menubar = Menu(window)
     window.config(menu=menubar)
     filemenu = Menu(menubar, tearoff=0)
@@ -1206,6 +1041,9 @@ def materialy():
         menu=settingmenu)
     filemenu.add_command(label="Wyjście", command=window.quit)
     settingmenu.add_command(label="Czyszczenie Bazy Materiałów", command=pasword)
+    settingmenu.add_cascade(label="Sprawdź Bazę Materiałów",command=sprawdz)
+    settingmenu.add_separator()
+    settingmenu.add_cascade(label="Pobierz Listę Materiałów", command= to_excel_mat)
     var.trace_add('write', to_upper)
     var1.trace_add('write', to_upper)
     var2.trace_add('write', to_upper)
@@ -1464,21 +1302,14 @@ def okienko():
 
     menubar=Menu(window)
     filemenu=Menu(menubar,tearoff=0)
-    filemenu.add_cascade(label=' Karta Pracownika',command=karta_pers)
+    filemenu.add_cascade(label='Karta Pracownika',command=karta_pers)
     filemenu.add_cascade(label='Karta Materiałowa', command=materialy)
+    filemenu.add_cascade(label='Karta Maszyn',command=karta_maszyn)
+    filemenu.add_cascade(label='Zużycie Materiałów', command=zuzycie)
+    filemenu.add_cascade(label='Status Produkcji', command=produkcja)
+    filemenu.add_cascade(label='Zamówienia', command=zam)
     menubar.add_cascade(label='Moduły',menu=filemenu)
     window.config(menu=menubar)
-
-    
-
-    b3=Button(window, text='Status Produkcji',command=produkcja,font=('arial',15),width=20)
-    b3.grid(row=3,column=0,padx=10,pady=10,sticky='W')
-
-    b5=Button(window, text='Zużycie Materiałów',command=zuzycie,font=('arial',15),width=20)
-    b5.grid(row=5,column=0,padx=10,pady=10,sticky='W')
-
-    b6=Button(window, text='Zamówienia',command=zam,font=('arial',15),width=20)
-    b6.grid(row=6,column=0,padx=10,pady=10,sticky='W')
     window.mainloop()
 
 okienko()
