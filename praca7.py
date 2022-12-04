@@ -1004,6 +1004,16 @@ def zam():
 
 
 
+def okienko1():
+    #tworznie widoku z 5 przyciskami
+    window1 = Tk()
+    window1.title('System Zarządzania Przedsiębiorstwem')
+    window1.geometry('450x400')
+    window1.config(background='#b3b3b3')
+    b10=Button(window1,text='Odnotuj Rezultat',command=okienko,font=('arial',30),background='green')
+    b10.grid(row=1,column=1,padx=20,pady=20)
+    window1.mainloop()
+
 def okienko():
     #tworznie widoku z 5 przyciskami
     window = Tk()
@@ -1226,7 +1236,8 @@ def okienko():
        # var.set(var.get().upper())
         var1.set(var1.get().upper())
         var2.set(var2.get().upper())
-
+    
+ 
     var = tk.StringVar(window)
     var1 = tk.StringVar(window)
     var2 = tk.StringVar(window)
@@ -1267,6 +1278,8 @@ def okienko():
     l9.grid(row=3, column=1,padx=20,pady=20,sticky='W')
     b9 = Entry(window, font=('arial', 20), width=25)
     b9.grid(row=3, column=2)
+    b10=Button(window,text='Zakończ Działanie',command=window.quit,font=('arial',20))
+    b10.grid(row=10,column=2,padx=20,pady=20)
 
     menubar = Menu(window)
     window.config(menu=menubar)
@@ -1298,6 +1311,5 @@ def okienko():
     filemenu.add_cascade(label='Zamówienia', command=zam)
     menubar.add_cascade(label='Moduły',menu=filemenu)
     window.config(menu=menubar)
-    window.mainloop()
 
-okienko()
+okienko1()
