@@ -1031,8 +1031,7 @@ def okienko1():
     window1.title('System Zarządzania Przedsiębiorstwem')
     window1.geometry('380x300')
     window1.config(background='#b3b3b3')
-    # ******************
-    
+    # *****************
     # ***************
     def export_to_excel():
         workbook = Workbook('produkcja.xlsx')
@@ -1128,8 +1127,7 @@ def okienko1():
         text = Text(window6, height=20, width=40)    
 
 
-        #***********************
-
+        #**********************
 
     def okienko55():
         window55=Tk()
@@ -1150,27 +1148,55 @@ def okienko1():
         window55.mainloop()
 
 
+    def statystyka():
+        workbook = Workbook('statystyka_danych.xlsx')
+        worksheet = workbook.add_worksheet()
+        con = sqlite3.connect('factory_db')
+        c = con.cursor()
+        con.execute("select * from numery_personalne")
+        mysel = c.execute("select * from numery_personalne")
+        for i, row in enumerate(mysel):
+            for j, value in enumerate(row):
+                worksheet.write(i, j, row[j])
+        worksheet1 = workbook.add_worksheet()
+        con.execute("select * from pracownicy")
+        mysel = c.execute("select * from pracownicy")
+        for i, row in enumerate(mysel):
+            for j, value in enumerate(row):
+                worksheet1.write(i, j, row[j])
+        worksheet2 = workbook.add_worksheet()
+        con.execute("select * from status_produkcji")
+        mysel = c.execute("select * from status_produkcji")
+        for i, row in enumerate(mysel):
+            for j, value in enumerate(row):
+                worksheet2.write(i, j, row[j])
+        worksheet3 = workbook.add_worksheet()
+        con.execute("select * from maszyny")
+        mysel = c.execute("select * from maszyny")
+        for i, row in enumerate(mysel):
+            for j, value in enumerate(row):
+                worksheet3.write(i, j, row[j])
+        workbook.close()
+
+
+
+
+
     # ***********
-<<<<<<< HEAD
     b10=Button(window1,text='Panel Raportowania',command=okienko,font=('arial',30),background='green')
     b10.grid(row=1,column=1,padx=20,pady=20)
-=======
-    window1.state('zoomed')
-    b10=Button(window1,text='Odnotuj Rezultat',command=okienko,font=('arial',70),background='green',width=20)
-    b10.grid(row=1,column=1,padx=80,pady=80,sticky='n')
-    b11=Button(window1,text='Zgłoś Usterkę',font=('arial',70),background='red',width=20)
-    b11.grid(row=2,column=1,padx=80,pady=80,sticky='n')
-
->>>>>>> 09771ce302d32a1f6005a14091cc0e0f4d039a41
     menubar=Menu(window1)
     filemenu=Menu(menubar,tearoff=0)
+    filemenu1=Menu(menubar,tearoff=0)
     filemenu.add_cascade(label='Karta Pracownika',command=karta_pers)
     filemenu.add_cascade(label='Karta Materiałowa', command=materialy)
     filemenu.add_cascade(label='Karta Maszyn',command=karta_maszyn)
     filemenu.add_cascade(label='Zużycie Materiałów', command=zuzycie)
     filemenu.add_cascade(label='Status Produkcji',command=okienko55)
     filemenu.add_cascade(label='Zamówienia', command=zam)
+    filemenu1.add_cascade(label='Importuj Dane',command=statystyka)
     menubar.add_cascade(label='Moduły',menu=filemenu)
+    menubar.add_cascade(label='Analityka',menu=filemenu1)
     window1.config(menu=menubar)
     window1.mainloop()
 
