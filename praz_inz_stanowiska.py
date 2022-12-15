@@ -1029,7 +1029,7 @@ def okienko1():
     #tworznie widoku z 5 przyciskami
     window1 = Tk()
     window1.title('System Zarządzania Przedsiębiorstwem')
-    window1.geometry('450x400')
+    window1.geometry('380x300')
     window1.config(background='#b3b3b3')
     # ******************
     
@@ -1151,8 +1151,17 @@ def okienko1():
 
 
     # ***********
+<<<<<<< HEAD
     b10=Button(window1,text='Panel Raportowania',command=okienko,font=('arial',30),background='green')
     b10.grid(row=1,column=1,padx=20,pady=20)
+=======
+    window1.state('zoomed')
+    b10=Button(window1,text='Odnotuj Rezultat',command=okienko,font=('arial',70),background='green',width=20)
+    b10.grid(row=1,column=1,padx=80,pady=80,sticky='n')
+    b11=Button(window1,text='Zgłoś Usterkę',font=('arial',70),background='red',width=20)
+    b11.grid(row=2,column=1,padx=80,pady=80,sticky='n')
+
+>>>>>>> 09771ce302d32a1f6005a14091cc0e0f4d039a41
     menubar=Menu(window1)
     filemenu=Menu(menubar,tearoff=0)
     filemenu.add_cascade(label='Karta Pracownika',command=karta_pers)
@@ -1169,7 +1178,7 @@ def okienko():
     #tworznie widoku z 5 przyciskami
     window = Tk()
     window.title('System Zarządzania Przedsiębiorstwem')
-    window.geometry('450x400')
+    window.geometry('450x350')
     window.config(background='#b3b3b3')
     window.state('zoomed')
 
