@@ -559,8 +559,8 @@ def karta_maszyn():
         label="Narzędzia Administracyje",
         menu=settingmenu)
     filemenu.add_command(label="Wyjście", command=window.quit)
-    settingmenu.add_command(label="Podglą Tabeli Pracowników", command=display_maszyny)
-    settingmenu.add_command(label="Czyszczenie Tabeli Pracowników", command=pasword)
+    settingmenu.add_command(label="Podglą Tabeli Maszyn", command=display_maszyny)
+    settingmenu.add_command(label="Czyszczenie Tabeli Maszyn", command=pasword)
     settingmenu.add_separator()
     settingmenu.add_cascade(label='Pobierz Listę Maszyn', command=to_excel)
 
@@ -909,6 +909,21 @@ def zam():
         if len(w)<1:
             messagebox.showinfo('Informacja Systemowa','Baza Danych Zamówień Jest Czysta')
 
+    def to_excel_zam():
+        workbook = Workbook('zamowienia.xlsx')
+        worksheet = workbook.add_worksheet()
+        con = sqlite3.connect('factory_db')
+        c = con.cursor()
+        con.execute("select * from zamowienia")
+        mysel = c.execute("select * from zamowienia")
+        for i, row in enumerate(mysel):
+            for j, value in enumerate(row):
+                worksheet.write(i, j, row[j])
+        messagebox.showinfo('Informacja Systemowa','Baza Danych Została Zaimportowana')
+        workbook.close()
+        window.destroy()
+
+
     def zmiana_statusu():
         def zmiana():
             con = sqlite3.connect('factory_db')
@@ -921,6 +936,7 @@ def zam():
                 messagebox.showinfo('Informacja Systemowa','Zamówienie Zostało Zmienione')
                 b11.delete(0, END)
                 b12.delete(0, END)
+                window3.destroy()
             if len(d)<1:
                 messagebox.showinfo('Błąd Danych','Numer Zamówienie Musi Być Uzupełniony')
 
@@ -928,22 +944,22 @@ def zam():
             var.set(var.get().upper())
             var1.set(var1.get().upper())
 
-        window = Tk()
-        window.title('Zmiana Statusu Zamówienia')
-        var = tk.StringVar(window)
-        var1 = tk.StringVar(window)
 
-        window.geometry('750x300')
-        window.config(background='#b3b3b3')
-        l11 = Label(window, text='Podaj Numer Zamówienia:',font=('arial', 20),background='white')
+        window3 = Tk()
+        window3.title('Zmiana Statusu Zamówienia')
+        var = tk.StringVar(window3)
+        var1 = tk.StringVar(window3)
+        window3.geometry('750x300')
+        window3.config(background='#b3b3b3')
+        l11 = Label(window3, text='Podaj Numer Zamówienia:',font=('arial', 20),background='white')
         l11.grid(row=1, column=0, pady=10, padx=10,sticky='w')
-        b11 = Entry(window, font=('arial', 20),textvariable=var )
+        b11 = Entry(window3, font=('arial', 20),textvariable=var )
         b11.grid(row=1, column=2, padx=10, pady=10)
-        l12 = Label(window, text='Podaj Nowy Status:', font=('arial', 20),background='white')
+        l12 = Label(window3, text='Podaj Nowy Status:', font=('arial', 20),background='white')
         l12.grid(row=2, column=0, pady=10, padx=10,sticky='w')
-        b12 = Entry(window, font=('arial', 20),textvariable=var1 )
+        b12 = Entry(window3, font=('arial', 20),textvariable=var1 )
         b12.grid(row=2, column=2, padx=10, pady=10)
-        b13 = Button(window, text='Akceptuj Zmiany', command=zmiana, font=('arial', 20))
+        b13 = Button(window3, text='Akceptuj Zmiany', command=zmiana, font=('arial', 20))
         b13.grid(row=3, column=2, padx=50, pady=10, sticky='N')
         var.trace_add('write', to_upper)
         var1.trace_add('write', to_upper)
@@ -970,7 +986,12 @@ def zam():
         label="Narzędzia Administracyje",
         menu=settingmenu)
     filemenu.add_command(label="Wyjście", command=window.quit)
+    settingmenu.add_command(label="Sprawdź Bazy Danych Zamówień", command=sprawdz)
     settingmenu.add_command(label="Wyczyść Bazę Danych Zamówień", command=pasword)
+    settingmenu.add_separator()
+    settingmenu.add_command(label="Pobierz Bazę Zamówień", command=to_excel_zam)
+
+
     l1 = Label(window, text='Wprowadź Numer Części Gotowej:', font=('arail', 20), background='white')
     l1.grid(row=1, column=0, pady=10, padx=10, sticky='W')
     b1 = Entry(window, font=('arail', 20),textvariable=var)
@@ -989,8 +1010,8 @@ def zam():
     b4.grid(row=4, column=1, padx=10, pady=8, sticky='W')
     b5 = Button(window, text='Wprowadź', command=zamowienie, width=20, font=('arial', 20))
     b5.grid(row=6, column=1, padx=10, pady=20, sticky='W')
-    b6 = Button(window, text='Sprawdź zamówienia', command=sprawdz, width=20, font=('arial', 20))
-    b6.grid(row=7, column=0, padx=10, pady=20, sticky='W')
+    #b6 = Button(window, text='Sprawdź zamówienia', command=sprawdz, width=20, font=('arial', 20))
+    #b6.grid(row=7, column=0, padx=10, pady=20, sticky='W')
     b7 = Button(window, text='Zmień Status', command=zmiana_statusu, width=20, font=('arial', 20))
     b7.grid(row=7, column=1, padx=10, pady=20, sticky='W')
     cal_lab=Label(window, text='Podaj Datę Dostawy:', font=('arail', 20), background='white')
@@ -1068,7 +1089,7 @@ def okienko1():
                 # define headings
                 tree.heading('c1', text='ID')
                 tree.heading('c2', text='Data')
-                tree.heading('c3', text='Numer Zmiany')
+                tree.heading('c3', text='Przedział Czasowy')
                 tree.heading('c4', text='Numer Części')
                 tree.heading('c5', text='Ilość')
                 tree.heading('c6', text='Ilość Częsci Uszkodzonych/NIOK')
@@ -1079,7 +1100,7 @@ def okienko1():
                 results=cur.execute('select * from status_produkcji')
                 w=results.fetchall()
                 if len(w)>0:
-                    for row in cur.execute('select id,data,przedział,productk,qty,qty1,pracownik from status_produkcji'):
+                    for row in cur.execute('select id,data,przedział,produkt,qty,qty1,pracownik from status_produkcji'):
                         tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
                         tree.grid(row=0, column=0, sticky='nsew')
                         # add a scrollbar
@@ -1115,7 +1136,7 @@ def okienko1():
         window55.title('System Ewidencji Produkcji')
         window55.geometry('450x130')
         window55.configure(background='#b3b3b3')
-        bb2 = Label(window55, text='Weryfikuj Produkcję',font=('arial', 25),width=20)
+        bb2 = Label(window55, text='Okno Weryfikacji Produkcji',font=('arial', 25),width=20)
         bb2.grid(row=2,sticky='N', padx=20, pady=20)
         menubar = Menu(window55)
         filemenu = Menu(menubar, tearoff=0)
@@ -1130,7 +1151,7 @@ def okienko1():
 
 
     # ***********
-    b10=Button(window1,text='Odnotuj Rezultat',command=okienko,font=('arial',30),background='green')
+    b10=Button(window1,text='Panel Raportowania',command=okienko,font=('arial',30),background='green')
     b10.grid(row=1,column=1,padx=20,pady=20)
     menubar=Menu(window1)
     filemenu=Menu(menubar,tearoff=0)
@@ -1222,6 +1243,7 @@ def okienko():
     def show_my():
         if b3.get():
             show_my_results()
+            b3.delete(0,END)
         else:
             tk.messagebox.showerror('Błąd Danych', 'Numer Personalny Musi Zostać Podany')
 
@@ -1281,7 +1303,7 @@ def okienko():
     b1 = Entry(window, width=25, font=('arial', 20))
     b1.grid(padx=20, pady=20, column=2, row=1,sticky='W')
     # Produced qty
-    l2 = Label(window, text='Odnotuj Wyprodukowane Ilośći:', font=("arial", 20), background='white')
+    l2 = Label(window, text='Podaj Ilości Zgodne Z Charakterystyką:', font=("arial", 20), background='white')
     l2.grid(padx=20, pady=20, row=2, column=1,sticky='W')
     b2 = Entry(window, width=25, font=('arial', 20))
     b2.grid(padx=20, pady=20, column=2, row=2)
