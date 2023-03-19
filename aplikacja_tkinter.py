@@ -4,7 +4,7 @@ import sqlite3
 
 con = sqlite3.connect("my_database")
 cur = con.cursor()
-cur.execute("create table lista_studentów('Imię','Nazwisko','Kierunek Studiów','Index')")
+cur.execute("create table if not exists lista_studentów('Imię','Nazwisko','Kierunek Studiów','Index')")
 
 def zapisz():
     #auto cleaning etry fields
