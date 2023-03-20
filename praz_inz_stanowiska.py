@@ -1029,7 +1029,7 @@ def okienko1():
     #tworznie widoku z 5 przyciskami
     window1 = Tk()
     window1.title('System Zarządzania Przedsiębiorstwem')
-    window1.geometry('380x300')
+    window1.geometry('430x300')
     window1.config(background='#b3b3b3')
     # *****************
     # ***************
