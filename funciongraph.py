@@ -15,14 +15,15 @@ def plot():
     max=max_button.get()
     funkcja=func_button.get()
     wklad=np.linspace(int(min),int(max))
-    y=[]
+    wynik=[]
     try:
         for x in wklad:
-            y.append((eval(funkcja)))
+            wynik.append((eval(funkcja)))
     except SyntaxError:
         showerror("Fault",'Please check your function!!!')
-    plt.plot(y)
+    plt.plot(wynik)
     plt.title(f'Graph for your funcion : {funkcja}')
+
     plt.show()    
 
 def export():
@@ -30,10 +31,10 @@ def export():
     max=max_button.get()
     funkcja=func_button.get()
     wklad=np.linspace(int(min),int(max))
-    y=[]
+    wynik=[]
     for x in wklad:
-        y.append((eval(funkcja)))
-    frame=pd.DataFrame(y)
+        wynik.append((eval(funkcja)))
+    frame=pd.DataFrame(wynik)
     frame.to_excel('Results_for_my_funcion.xlsx')
     print(frame)
     
@@ -43,7 +44,7 @@ def export():
     
 
 window.geometry('850x350')
-window.title("Ploting your graph absed on given function")
+window.title("Ploting your graph based on given function")
 window.config(background='green')
 
 func_label=tk.Label(window,text='Please pass your funcion: ',font=('arial',20),width=24)
@@ -62,7 +63,7 @@ max_button.grid(row=2,column=1,padx=10,pady=10)
 draw=tk.Button(window,text="Draw",command=plot,font=('arial',20),background='red',width=10)
 draw.grid(row=3,column=1)
 
-draw=tk.Button(window,text="Export Results",command=export,font=('arial',20),background='orange',width=10)
+draw=tk.Button(window,text="Export Results",command=export,font=('arial',20),background='orange',width=14)
 draw.grid(row=4,column=1,pady=20)
 
 
