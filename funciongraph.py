@@ -21,6 +21,8 @@ def plot():
             wynik.append((eval(funkcja)))
     except SyntaxError:
         showerror("Fault",'Please check your function!!!')
+    except NameError:
+        showerror("Fault",'Please provide only X !!!')
     plt.plot(wynik)
     plt.title(f'Graph for your funcion : {funkcja}')
 
