@@ -311,3 +311,4 @@ viewmenu.add_command(label="Wylicz Czas Pracy", command=explore_work_time)
 settingmenu.add_command(label="Uruchom Panel Administracyjny", command=administratio_panel)
 settingmenu.add_command(label="Uruchom Narzędzia Administracyjne", command=narzedzia)
 window1.mainloop()
+###end
