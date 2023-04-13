@@ -197,7 +197,7 @@ def funncxyz():
     min_y_button.grid(row=2,column=1,padx=10,pady=10,sticky='w')
     max_y_button=tk.Entry(window,font=('arial',20),width=5)
     max_y_button.grid(row=2,column=1,padx=10,pady=10,sticky='e')
-    z_label=tk.Label(window,text='Please choose your Y range: ',font=('arial',20))
+    z_label=tk.Label(window,text='Please choose your Z range: ',font=('arial',20))
     z_label.grid(row=3,column=0,padx=10,pady=10)
     min_z_button=tk.Entry(window,font=('arial',20),width=5)
     min_z_button.grid(row=3,column=1,padx=10,pady=10,sticky='w')
