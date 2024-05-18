@@ -20,7 +20,6 @@ cur.execute(
 
 #cur.execute("drop table wejscie")
 
-
 def start():
     window = Tk()
     window.title("Czas pracy")
